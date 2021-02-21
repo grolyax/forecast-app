@@ -67,7 +67,7 @@ function renderCityList(cities) {
 
 searchInput.addEventListener('focus', () => {
     listContainer.style.display = 'block';
-});
+})
 
 //теперь сделаем подсказку по поиску города
 searchInput.addEventListener('input', async (event) => {
