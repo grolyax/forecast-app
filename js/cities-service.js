@@ -1,5 +1,6 @@
 
 import requestService from './request-service.js';
+
 class CitiesService {
 constructor(requestService) {
     this.requestService = requestService;
