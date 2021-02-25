@@ -8,12 +8,26 @@ class WeatherService {
         this.baseUrl = 'https://api.openweathermap.org/data/2.5';
     }
 
-    getCurrentWeather(cityName) {
-        return this.requestService.get(`${this.baseUrl}/weather?q=${cityName}&appid=${API_KEY}&units=metric`);
+   async getCurrentWeather(cityName) {
+        try{
+            const result = await this.requestService.get(`${this.baseUrl}/weather?q=${cityName}&appid=${API_KEY}&units=metric`)
+            return result;
+        } catch (error) {
+            if (error.message === '404') {
+                throw Error('City not found');
+            }
+        }
     }
 
-    getForecast(cityName) {
-        return this.requestService.get(`${this.baseUrl}/forecast/daily?q=${cityName}&appid=${API_KEY}&units=metric&cnt=7`);
+    async getForecast(cityName) {
+        try {
+            const result = await this.requestService.get(`${this.baseUrl}/forecast/daily?q=${cityName}&appid=${API_KEY}&units=metric&ctn=7`);
+            return result;
+        } catch (error) {
+            if (error.message === '404') {
+                throw Error('City not found');
+            }
+        }
     }
 }
 

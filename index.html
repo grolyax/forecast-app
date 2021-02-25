@@ -12,12 +12,17 @@
         <form id="search">
             <div class="autocomlete">
                 <input class="city-name" type="text" name="city-name">
-                <div class="list-container" id="list-container" style="display: none;"></div>
+                <span class="input-loader spinner" style="display: none"></span>
+                <div class="list-container" id="list-container" style="display: none"></div>
             </div>
 
             <button type="submit">Search</button>
         </form>
+
+        <div id="weather"></div>
     </div>
+
+    <div class="loader" style="display: none"><span class="spinner"></span></div>
    
     <script type="module" src="js/script.js"></script>
 </body>

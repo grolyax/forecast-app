@@ -1,11 +1,50 @@
 import citiesService from './cities-service.js';
 import weatherService from './weather-service.js';
+import debounce from './debounce.js';
 
 const form = document.getElementById('search');
-const container = document.querySelector('.container');
 const searchInput = document.querySelector('#search input');
-//const autocomleteContainer = document.querySelector('.autocomlete');
 const listContainer = document.getElementById('list-container');
+const weatherContainer = document.getElementById('weather');
+const inputLoader = document.querySelector('.input-loader');
+const loader = document.querySelector('.loader');
+
+function renderWeather(currentWeather, forecast) {
+    weatherContainer.innerHTML = '';
+
+
+    const div = document.createElement('div');
+
+    div.innerHTML = `<span>Current temp: ${currentWeather.main.temp}</span>`;
+
+    const ul = document.createElement('ul');
+
+    const listItem = forecast.list.map((day) => {
+        const date = new Date(day.dt * 1000);
+        return `<li>Day: ${date.toLocaleDateString()} Temp: ${day.temp.day}</li>`;
+    });
+
+    ul.innerHTML = listItem.join('');
+
+    weatherContainer.appendChild(ul);
+    weatherContainer.appendChild(div);
+}
+
+async function getWeather(cityName) {
+    try {
+        loader.style.display = 'flex';
+
+        const currentWeather = await weatherService.getCurrentWeather(cityName);
+
+        const forecast = await weatherService.getForecast(cityName);
+
+        renderWeather(currentWeather, forecast);
+    } catch (error) {
+        weatherContainer.innerHTML = error.message;
+    } finally {
+        loader.style.display = 'none';
+    }
+}
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -14,34 +53,21 @@ form.addEventListener('submit', async (event) => {
 
     const cityName = formData.get('city-name');
 
-    const data = await weatherService.getForecast(cityName);
-
-    const currentWeather = await weatherService.getCurrentWeather(cityName);
-
-    const div = document.createElement('div');
-
-    div.innerHTML = `<span>Current temp: ${currentWeather.main.temp}</span>`;
-
-    const ul = document.createElement('ul');
-
-    const listItem = data.list.map((day) => {
-        const date = new Date(day.dt * 1000);
-        return `<li>Day: ${date.toLocaleDateString()} Temp: ${day.temp.day}</li>`;
-    });
-
-    ul.innerHTML = listItem.join();
-
-    container.appendChild(ul);
-    container.appendChild(div);
+    getWeather(cityName);
 });
 
 function removeListContainer() {
     listContainer.style.display = 'none';
 };
 
+listContainer.addEventListener('mousedown', (event) => {
+    const listItem = event.target.closest('.list-item');
 
-listContainer.addEventListener('click', (event) => {
-    console.log(event.target);
+    const cityName = listItem.querySelector('strong').textContent;
+
+    searchInput.value = cityName;
+
+    getWeather(cityName);
 });
 
 
@@ -61,19 +87,24 @@ function renderCityList(cities) {
     listContainer.innerHTML = listItems.join('');
 }
 
-//searchInput.addEventListener('blur', () => {
- //   removeListContainer();
-//} 
+searchInput.addEventListener('blur', () => {
+    removeListContainer();
+});
 
 searchInput.addEventListener('focus', () => {
     listContainer.style.display = 'block';
 })
 
 //теперь сделаем подсказку по поиску города
-searchInput.addEventListener('input', async (event) => {
+
+searchInput.addEventListener('input', debounce(async (event) => {
     const { value } = event.target;
 
+    inputLoader.style.display = 'block';
+
     const cities = await citiesService.getCities();
+
+    inputLoader.style.display = 'none';
 
     const match = cities.filter((city) => {
         if (city.name.toUpperCase().includes(value.toUpperCase())) {
@@ -84,4 +115,4 @@ searchInput.addEventListener('input', async (event) => {
     });
 
     renderCityList(match.slice(0, 5));
-});
+}, 1000));

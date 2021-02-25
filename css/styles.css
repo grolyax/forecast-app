@@ -15,7 +15,7 @@ form {
     display: flex;
 }
 
-.autocomplete {
+.autocomlete {
     position: relative;
 }
 
@@ -26,11 +26,13 @@ form {
     border-top: none;
     background-color: white;
     box-sizing: border-box;
+    background-color: #ffffff;
 }
 
 .list-item {
     padding: 5px;
     cursor: pointer;
+    background-color: #ffffff;
 }
 
 .list-item:hover {
@@ -44,4 +46,51 @@ form {
 
 ul {
     width: 264px;
+}
+
+.spinner {
+    display: block;
+    border: 3px solid red;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation-name: spin;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(1, 1, 1, 0.5);
+    width: 100vw;
+    height: 100vh;
+}
+
+.input-loader {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 8px;
+    height: 8px; 
+}
+
+.loader .spinner {
+    width: 20px;
+    height: 20px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
